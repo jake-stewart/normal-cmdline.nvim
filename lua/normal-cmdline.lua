@@ -1,7 +1,7 @@
 local function restore_winviews(winviews)
     for win_id, winview in pairs(winviews) do
-        vim.api.nvim_win_call(win_id, function()
-            vim.fn.winrestview(winview)
+        pcall(vim.api.nvim_win_call, win_id, function()
+            pcall(vim.fn.winrestview, winview)
         end)
     end
 end
