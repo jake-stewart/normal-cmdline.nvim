@@ -22,7 +22,6 @@ local HIGHLIGHTS = {
     "FloatBorder",
     "Search",
     "CurSearch",
-    "StatusLine",
     "CursorLineSign",
     "CursorLineNr",
     "LineNr",
@@ -88,7 +87,9 @@ setmetatable(CmdLine, CmdLine)
 
 function CmdLine:update_height(lines, forceUpdate)
     local height = calculateHeight(lines)
-    vim.api.nvim_win_set_config(self.win, { height = height })
+    vim.api.nvim_win_set_config(self.win, {
+        height = math.max(vim.o.cmdheight, height)
+    })
     if #lines > 1 then
         vim.api.nvim_buf_set_lines(self.buf, 0, -1, true, {
             table.concat(lines, TERM_CODES.ctrl_m)
@@ -112,10 +113,8 @@ end
 
 function CmdLine:restore_settings()
     if self.options then
-        vim.o.cmdheight = self.options.cmdheight
         vim.o.ruler = self.options.ruler
         vim.o.showmode = self.options.showmode
-        vim.o.laststatus = self.options.laststatus
         vim.o.titlestring = self.options.titlestring
         self.options = nil
     end
@@ -224,10 +223,8 @@ function CmdLine:enter_normal(type, mappings, hl)
     self.type = type
     if self.options == nil then
         self.options = {
-            cmdheight = vim.o.cmdheight,
             ruler = vim.o.ruler,
             showmode = vim.o.showmode,
-            laststatus = vim.o.laststatus,
             titlestring = vim.o.titlestring,
         }
         local width = math.floor(
@@ -239,33 +236,20 @@ function CmdLine:enter_normal(type, mappings, hl)
             "%%",
             "%%%%"
         )
-        vim.o.cmdheight = 0
         vim.o.ruler = false
         vim.o.showmode = false
     end
 
-    if self.options.laststatus > 0 then
-        vim.cmd("botright 1sp +b" .. self.buf)
-        self.win = vim.api.nvim_get_current_win()
-        vim.opt_local.laststatus = 0
-        vim.wo.number = false
-        vim.wo.relativenumber = false
-        vim.wo.statuscolumn = ""
-        vim.wo.cursorline = false
-        vim.wo.cursorcolumn = false
-        vim.wo.foldcolumn = "0"
-        vim.wo.spell = false
-    else
-        self.win = vim.api.nvim_open_win(self.buf, true, {
-            anchor = "NW",
-            relative = "editor",
-            style = "minimal",
-            row = vim.o.lines,
-            col = 0,
-            width = vim.o.columns,
-            height = 1
-        })
-    end
+    self.win = vim.api.nvim_open_win(self.buf, true, {
+        anchor = "NW",
+        relative = "editor",
+        style = "minimal",
+        row = vim.o.lines,
+        col = 0,
+        width = vim.o.columns,
+        zindex = 1000,
+        height = math.max(1, vim.o.cmdheight)
+    })
 
     local hl_buffer = {}
     for _, name in ipairs(HIGHLIGHTS) do
