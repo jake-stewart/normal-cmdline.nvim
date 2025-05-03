@@ -2,6 +2,8 @@
 
 Lets you use normal mode in nvim cmdline.
 
+https://github.com/user-attachments/assets/862298d9-9e9b-461e-9c86-ad5e7e90bc26
+
 ### example config (lazy.nvim)
 
 ```lua
