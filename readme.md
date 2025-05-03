@@ -35,8 +35,10 @@ https://github.com/user-attachments/assets/862298d9-9e9b-461e-9c86-ad5e7e90bc26
 ```
 
 ### caveats
-- The plugin does not work correctly any `'cmdheight'` other than `1` or `0`.
+- The plugin does not work correctly for any `'cmdheight'` other
+  than `1` or `0`.
 - Counts and dot register does not work for insert mode. This is
   because there is no insert mode. When you enter insert mode you
   really enter commandline mode so that completion works correctly.
-- Search, input, and other modes other than `:` are not supported.
+- Search, input, and other cmdline modes other than `:` are not
+  supported.
